@@ -334,6 +334,11 @@ typedef enum uc_query_type {
     UC_QUERY_TIMEOUT,  // query if emulation stops due to timeout (indicated if result = True)
 } uc_query_type;
 
+// All type of queries for uc_qemu() API.
+typedef enum uc_qemu_type {
+    UC_QEMU_CLOCK_GET_NS = 1, // Call qemu_clock_get_ns with (QEMUClockType)arg
+} uc_qemu_type;
+
 // Opaque storage for CPU context, used with uc_context_*()
 struct uc_context;
 typedef struct uc_context uc_context;
@@ -411,6 +416,21 @@ uc_err uc_close(uc_engine *uc);
 */
 UNICORN_EXPORT
 uc_err uc_query(uc_engine *uc, uc_query_type type, size_t *result);
+
+/*
+ Access underlying qemu API.
+
+ @uc: handle returned by uc_open()
+ @type: Qemu request type. See uc_qemu
+
+ @arg:  Argument meaning dictated by request type
+
+ @result: save the result
+
+ @return: error code of uc_err enum type (UC_ERR_*, see above)
+*/
+UNICORN_EXPORT
+uc_err uc_qemu(uc_engine *uc, uc_qemu_type type, void *arg, int64_t *result);
 
 /*
  Report the last error number when some API function fails.

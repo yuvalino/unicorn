@@ -24,6 +24,7 @@
 
 #include "qemu/include/hw/boards.h"
 #include "qemu/include/qemu/queue.h"
+#include "qemu/include/qemu/timer.h"
 
 static void free_table(gpointer key, gpointer value, gpointer data)
 {
@@ -1284,6 +1285,21 @@ uc_err uc_query(uc_engine *uc, uc_query_type type, size_t *result)
 
         case UC_QUERY_TIMEOUT:
             *result = uc->timed_out;
+            break;
+    }
+
+    return UC_ERR_OK;
+}
+
+UNICORN_EXPORT
+uc_err uc_qemu(uc_engine *uc, uc_qemu_type type, void *arg, int64_t *result)
+{
+    switch(type) {
+        default:
+            return UC_ERR_ARG;
+
+        case UC_QEMU_CLOCK_GET_NS:
+            *result = qemu_clock_get_ns((QEMUClockType)arg);
             break;
     }
 

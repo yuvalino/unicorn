@@ -134,6 +134,7 @@ _setup_prototype(_uc, "uc_mem_map_ptr", ucerr, uc_engine, ctypes.c_uint64, ctype
 _setup_prototype(_uc, "uc_mem_unmap", ucerr, uc_engine, ctypes.c_uint64, ctypes.c_size_t)
 _setup_prototype(_uc, "uc_mem_protect", ucerr, uc_engine, ctypes.c_uint64, ctypes.c_size_t, ctypes.c_uint32)
 _setup_prototype(_uc, "uc_query", ucerr, uc_engine, ctypes.c_uint32, ctypes.POINTER(ctypes.c_size_t))
+_setup_prototype(_uc, "uc_qemu", ucerr, uc_engine, ctypes.c_uint32, ctypes.c_void_p, ctypes.POINTER(ctypes.c_int64))
 _setup_prototype(_uc, "uc_context_alloc", ucerr, uc_engine, ctypes.POINTER(uc_context))
 _setup_prototype(_uc, "uc_free", ucerr, ctypes.c_void_p)
 _setup_prototype(_uc, "uc_context_save", ucerr, uc_engine, uc_context)
@@ -470,6 +471,13 @@ class Uc(object):
     def query(self, query_mode):
         result = ctypes.c_size_t(0)
         status = _uc.uc_query(self._uch, query_mode, ctypes.byref(result))
+        if status != uc.UC_ERR_OK:
+            raise UcError(status)
+        return result.value
+
+    def qemu(self, qemu_type, arg):
+        result = ctypes.c_int64(0)
+        status = _uc.uc_qemu(self._uch, qemu_type, ctypes.c_void_p(arg), ctypes.byref(result))
         if status != uc.UC_ERR_OK:
             raise UcError(status)
         return result.value
